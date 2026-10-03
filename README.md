@@ -1,80 +1,85 @@
 # Fixed-Income Research Lab
 
-A research workspace for studying government bonds, corporate credit, macroeconomic indicators, and the design of AI-assisted fixed-income research workflows.
+Government-bond and corporate-credit research, with a **runnable, offline bond-pricing example** and a separate archive of dated research inputs.
 
-**Author:** Xavier Chen · MS Finance, Fordham University  
-**Status:** Early-stage research workspace. The repository currently contains dated data exports and chart files, not an implemented dashboard or an automated research service.
+**Xavier Chen · Fordham MS Finance**  
+**Status:** Educational research workspace, not a live dashboard or trading service.
 
-## Project description
+## Start with the working example
 
-The goal is to connect macroeconomic developments and issuer-level information with questions about yields, yield curves, and credit spreads. The original repository name, `Headhunt_FixedIncome`, reflects the broader ambition to develop reusable research skills and fixed-income career preparation resources.
+[Source code](bond_demo.py) · [Expected output](examples/expected_scenarios.csv) · [Tests](tests/test_bond_demo.py) · [Validation record](docs/VALIDATION.md)
 
-The distinction between **available materials** and **planned functionality** is intentional: the current files are inputs for analysis, not evidence of a tested trading strategy.
+Explore how the price of a fictional five-year, 5% coupon bond changes when its yield changes. The example calculates price, Macaulay duration, modified duration, and convexity, then compares exact repricing with the first-order duration approximation.
 
-## Start here
+All inputs are synthetic. No data-provider account, API key, download, or private workbook is needed.
 
-Open the [October 1, 2026 research snapshot](Fixed%20income%20data%20as%20of%20Oct%201%202026/). The folder name records the collection date; individual series may have different observation dates and frequencies.
+## Tech stack and installation
 
-| Area | Existing materials |
-| --- | --- |
-| Government bonds | US Treasury chart files, a US 10-year index workbook, and Japan/China curve images |
-| Corporate credit | Bond workbooks labelled Oracle, NVIDIA, Meta, Microsoft, Google, Blackstone, BlackRock, and Blue Owl; selected spread files |
-| Macroeconomics | US, Japan, and China activity, inflation, and labour-market workbooks |
-| Cross-market reference | World bond, curve, and spread workbooks |
-
-This inventory describes the files present; it does not independently validate their contents, definitions, or redistribution permissions.
-
-## Tech stack and formats
-
-The current repository uses Excel workbooks (`.xlsx`), PNG charts, and an HTML spreadsheet export. No Python package, application entry point, or dependency manifest is included yet.
-
-Planned analytical work may use Python and reusable Markdown research instructions. These are development goals, not current software features.
-
-## Installation
-
-No software installation is required to browse the repository. To obtain a local copy:
+Python standard library only. Tested locally with Python **3.13.5**; no `pip install` step is needed for the example.
 
 ```bash
 git clone https://github.com/Xiaowen-CHEN-Learner/Headhunt_FixedIncome.git
 cd Headhunt_FixedIncome
+python bond_demo.py
+python -m unittest discover -s tests -v
 ```
-
-Use a spreadsheet application to inspect the workbooks. Review any external data connections before refreshing them; access to an original data provider may be required.
 
 ## Usage
 
-1. Select a workbook or chart from the dated snapshot folder.
-2. Establish the source, instrument identifier, observation dates, frequency, units, and missing-value conventions before using the series.
-3. Write a specific research question, such as how a yield-curve move relates to a macroeconomic release or how an issuer spread compares with a benchmark.
-4. Record transformations and assumptions separately from observations. Distinguish a coincident event from an established cause.
-5. Present conclusions with an as-of date, limitations, and links to the underlying permitted sources.
+Use decimal rates (`0.05` means 5%). Default face value is 100, maturity is five years, and coupons are semiannual.
 
-## Planned development
+```bash
+python bond_demo.py --coupon 0.05 --yield-rate 0.05 --years 5 --frequency 2
+python bond_demo.py --output output/scenarios.csv
+```
 
-- A source and field dictionary, including access and redistribution conditions for each dataset.
-- Government-bond and corporate-credit research workflows.
-- US 10-year yield/event visualizations and a sourced fixed-income news workflow.
-- Reproducible notebooks, a tested dependency specification, and permitted sample data.
-- Documented validation of units, missing values, observation dates, and benchmark alignment.
+| Yield shock | Yield | Price per 100 | Exact price change |
+| ---: | ---: | ---: | ---: |
+| -100 basis points | 4.00% | 104.491293 | +4.491293% |
+| -50 basis points | 4.50% | 102.216554 | +2.216554% |
+| 0 | 5.00% | 100.000000 | 0.000000% |
+| +50 basis points | 5.50% | 97.839981 | -2.160019% |
+| +100 basis points | 6.00% | 95.734899 | -4.265101% |
 
-## Data, limitations, and responsible use
+These are calculated educational examples, not market quotations, forecasts, or investment returns.
 
-Data snapshots are not a live feed. Definitions, accuracy, completeness, and availability must be checked before reuse. No performance results or investment recommendations are established by this repository.
+## Methodology and limits
 
-Some market-data exports or screenshots may be subject to provider or institutional restrictions. Confirm the relevant permissions before redistributing them. Where redistribution is not permitted, use source links, acquisition instructions, or clearly labelled synthetic examples instead. Do not upload credentials, account identifiers, confidential research, or employer information.
+The price is the sum of discounted coupon and principal cash flows. Valuation is exactly on a coupon date; maturity must span whole coupon periods. Annual nominal yield is compounded at the coupon frequency. Duration and convexity are derived from the same cash flows.
 
-## Contributing
+There is no accrued interest, default, call feature, term structure, tax, fee, or liquidity adjustment. The example therefore does not replace a production bond-pricing or credit-risk system.
 
-Suggestions on data documentation, research design, and reproducibility are welcome through GitHub issues. Describe the problem, the affected file, and a proposed improvement. Do not attach restricted datasets.
+**Validation:** 15 local unit tests passed on October 3, 2026. See the [validation record](docs/VALIDATION.md) for the scope. Passing example tests does not validate the historical data archive or a trading strategy.
 
-## Author and contact
+## Existing research archive
+
+The [October 1, 2026 snapshot](Fixed%20income%20data%20as%20of%20Oct%201%202026/) contains Excel workbooks, PNG charts, and an HTML spreadsheet export. The folder date is a collection date; individual observations may differ.
+
+| Area | Files present |
+| --- | --- |
+| Government bonds | US Treasury charts and a US 10-year workbook; Japan/China curve images |
+| Corporate credit | Workbooks labelled Oracle, NVIDIA, Meta, Microsoft, Google, Blackstone, BlackRock, and Blue Owl; selected spread files |
+| Macroeconomics | US, Japan, and China activity, inflation, and labour-market workbooks |
+| Cross-market reference | World bond, curve, and spread workbooks |
+
+This inventory does not establish accuracy or redistribution permissions. Inspect sources, instruments, units, dates, missing values, and external workbook connections before use. Do not redistribute restricted provider or institutional data. Use permitted samples or acquisition instructions where necessary.
+
+## Next development steps
+
+Document archive sources and usage rights; add a field dictionary; extend the analytical example only after validating settlement and instrument conventions. Government-bond dashboards, corporate-credit workflows, and reusable AI research skills remain development goals, not shipped features.
+
+## Attribution, contributions, and contact
+
+The offline example and tests were added with AI assistance during an October 2026 portfolio improvement session. They are intended for study, review, and extension; they are not presented as prior professional work. Existing research materials are preserved.
+
+Open an issue with a reproducible problem or suggested improvement. Do not attach confidential information or restricted datasets.
 
 [Xavier Chen on LinkedIn](https://www.linkedin.com/in/xiaowen-chen/) · [GitHub portfolio](https://github.com/Xiaowen-CHEN-Learner)
 
 ## License
 
-No project-wide license has been added. This README does not grant rights to third-party datasets or other materials.
+No project-wide license has been added. Third-party data retain their applicable rights and restrictions.
 
 ---
 
-Educational and research use only. Not investment advice.
+Educational research only. Not investment advice.
